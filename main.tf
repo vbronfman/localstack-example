@@ -10,7 +10,7 @@ terraform {
   }
 
 }
-required_version = "~> 1.5.4"
+required_version = "~> 1.6.0"
 
 }
 
@@ -89,14 +89,14 @@ resource "aws_instance" "myserver" {
   ami           = "ami-830c94e3"
   instance_type = "t2.micro"
   count = 6
-  depends_on = [ time_sleep.wait_30_seconds ]
+  depends_on = [ time_sleep.wait_n_seconds ]
 
   tags = {
     Name = "Server${count.index + 1}",
   }
  }
 
-resource "time_sleep" "wait_30_seconds" {
-  create_duration = "120s"
+resource "time_sleep" "wait_n_seconds" {
+  create_duration = "10s"
   depends_on = [docker_container.localstack]
 }
