@@ -17,6 +17,7 @@ required_version = "~> 1.5.4"
 
 provider "docker" {
     #  host = "tcp://127.0.0.1:55555"
+    host = "unix:///var/run/docker.sock"
 }
 
 /* resource "docker_image" "nginx" {
@@ -25,24 +26,27 @@ provider "docker" {
 } */
 
 // docker run --rm -it -p 4566:4566 -p 4571:4571 localstack/localstack
-# resource "docker_container" "localstack" {
-#   image = "localstack/localstack"
-#   name  = "localstack"
-#   ports {
-#     internal = 4566
-#     external = 4566
-#   }
-#    ports {
-#     internal = 4571
-#     external = 4571
+resource "docker_container" "localstack" {
+  image = "localstack/localstack"
+  name  = "localstack"
+  ports {
+    internal = 4566
+    external = 4566
+  }
+   ports {
+    internal = 4571
+    external = 4571
 
-#   }
-#     restart = "unless-stopped"
+  }
+    restart = "unless-stopped"
+    tty = true
+    stdin_open = true
+    must_run = true
 
-#     lifecycle {
-#       prevent_destroy = true
-#     }
-# }
+     lifecycle {
+     ignore_changes = all
+    }
+}
 
 provider "aws" {
   access_key                  = "test"
@@ -52,15 +56,15 @@ provider "aws" {
   skip_credentials_validation = true
   skip_metadata_api_check     = true
   skip_requesting_account_id  = true
-
+ 
   endpoints {
     apigateway     = "http://localhost:4566"
     apigatewayv2   = "http://localhost:4566"
     cloudformation = "http://localhost:4566"
     cloudwatch     = "http://localhost:4566"
     dynamodb       = "http://localhost:4566"
-    # ec2            = "http://localhost:4566"
-    ec2            = "http://127.0.0.1:4566"
+    ec2            = "http://localhost:4566"
+    # ec2            = "http://127.0.0.1:4566"
     es             = "http://localhost:4566"
     elasticache    = "http://localhost:4566"
     firehose       = "http://localhost:4566"
@@ -84,10 +88,15 @@ provider "aws" {
 resource "aws_instance" "myserver" {
   ami           = "ami-830c94e3"
   instance_type = "t2.micro"
-  count = 4
-  #depends_on = [ docker_container.localstack ]
+  count = 6
+  depends_on = [ time_sleep.wait_30_seconds ]
 
   tags = {
     Name = "Server${count.index + 1}",
   }
+ }
+
+resource "time_sleep" "wait_30_seconds" {
+  create_duration = "120s"
+  depends_on = [docker_container.localstack]
 }
