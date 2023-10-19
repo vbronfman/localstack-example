@@ -5,7 +5,6 @@ Terraform manifest to spawn localstack docker and run sample workload.
 
 The project spawns _localstack/localstack_ container and then provisions ephemeral EC2 instances via local AWS endpoints. 
 
-Inspired and guided by [ devopsjourney1 ](https://github.com/devopsjourney1/localstack-101) 
 
 ## Pre-requisute
 The project make use of Docker daemon spawns Localstack container - either local or remote.
@@ -16,13 +15,17 @@ The project is a regular Terraform solution and requires access to Terraform rep
 
 ## Usage:
 The project is a regular terraform set 
-```javascript
+```console
 terraform init
-_terraform plan_
-_terraform apply_
+terraform plan
+terraform apply terraform apply  -auto-approve
 ```
 
-In case of success there is Docker container runs Localstack. This one serves simulation of AWS API endpoints.   [See official docs]: [https://docs.localstack.cloud/user-guide/integrations/]
+In case of success there is Docker container runs Localstack up and running. This one serves simulation of AWS API endpoints.  [See official docs]: [https://docs.localstack.cloud/user-guide/integrations/]
 
 Note
 There is setting of _ignore_changes = all_ to prevent restart of container. The purpose is to avoid mischief due to ephemeral nature of AWS resources on top of Localstack
+
+# References
+This project made use of references of [ devopsjourney1 ](https://github.com/devopsjourney1/localstack-101) 
+
